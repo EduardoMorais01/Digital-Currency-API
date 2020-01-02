@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" href="./styles.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Currency</title>
+</head>
+
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo center"></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li id="maiorPreco"></li>
+        <li id="menorPreco"></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s3">
+            <select id="currency">
+              <option value="nothing" disabled selected>Choose your currency</option>
+              <option value="BTC">BTC</option>
+              <option value="LTC">LTC</option>
+              <option value="BCH">BCash</option>
+              <option value="XRP">XRP (Ripple)</option>
+              <option value="ETH">Ethereum</option>
+            </select>
+            <label>Currency</label>
+          </div>
+          <div class="input-field col s3">
+            <i class="material-icons prefix">attach_money</i>
+            <input id="icon_prefix" type="number" class="validate">
+            <label for="icon_prefix">Value in R$</label>
+          </div>
+          <div class="input-field col s3">
+            <i class="material-icons prefix">swap_horiz</i>
+            <input id="moedaConvertida" disabled="disabled" value="0" type="text" class="validate">
+            <label for="icon_telephone">Currency Converted</label>
+          </div>
+          <div class="col s3">
+            <a class="waves-effect waves-light btn" onclick="convert()"><i class="material-icons left">monetization_on
+              </i>Convert</a>
+          </div>
+
+
+        </div>
+      </form>
+    </div>
+
+</body>
+<div class="row">
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+  <head>
+    <script type="text/javascript">
+      var date = new Date();
+      date.setDate(date.getDate() - 1);
+      var dia1 = date.toLocaleString();
+
+      var date = new Date();
+      date.setDate(date.getDate() - 2);
+      var dia2 = date.toLocaleString();
+
+      var date = new Date();
+      date.setDate(date.getDate() - 3);
+      var dia3 = date.toLocaleString();
+
+      var date = new Date();
+      date.setDate(date.getDate() - 4);
+      var dia4 = date.toLocaleString();
+
+      var date = new Date();
+      date.setDate(date.getDate() - 5);
+      var dia5 = date.toLocaleString();
+
+      var date = new Date();
+      date.setDate(date.getDate() - 6);
+      var dia6 = date.toLocaleString();
+
+      var date = new Date();
+      date.setDate(date.getDate() - 7);
+      var dia7 = date.toLocaleString();
+
+      function drawChart() {
+        var xpr =
+          [['XRP', 'per Day'],
+          [dia1, "XRP"],
+          [dia2, "XRP"],
+          [dia3, "XRP"],
+          [dia4, "XRP"],
+          [dia5, "XRP"],
+          [dia6, "XRP"],
+          [dia7, "XRP"]];
+
+        for (let dia = 1; dia < xpr.length; dia++) {
+          for (let moeda = 0; moeda < xpr[dia].length; moeda++) {
+            ano = xpr[dia][0].substr(6, 4);
+            mes = xpr[dia][0].substr(3, 2);
+            dias = xpr[dia][0].substr(0, 2);
+            if (!moeda == 0) {
+              fetch("https://www.mercadobitcoin.net/api/XRP/day-summary/" + ano + "/" + mes + "/" + dias + "/", {
+                method: 'GET',
+                headers: {
+                  'Accept': 'application/json'
+                }
+              })
+                .then(function (response) {
+                  response.json().then(function (dataJson) {
+                    var options = {
+                      title: 'XPR AVG Value OF 7 Days'
+                    };
+                    xpr[dia][moeda] = parseFloat(dataJson.avg_price);
+
+                    var data = google.visualization.arrayToDataTable(xpr);
+                    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                    chart.draw(data, options);
+                    console.log(data);
+                  });
+                }).catch(function (err) {
+                })
+            }
+          }
+        }
+      }
+
+      function buscaPrecoMedioDoDia() {
+        var items = [
+          ['Dia', 'Bitcoin', 'Litecoin', 'BCash', 'Ethereum'],
+          [dia1, "BTC", "LTC", "BCH", "ETH"],
+          [dia2, "BTC", "LTC", "BCH", "ETH"],
+          [dia3, "BTC", "LTC", "BCH", "ETH"],
+          [dia4, "BTC", "LTC", "BCH", "ETH"],
+          [dia5, "BTC", "LTC", "BCH", "ETH"],
+          [dia6, "BTC", "LTC", "BCH", "ETH"],
+          [dia7, "BTC", "LTC", "BCH", "ETH"]
+        ];
+        for (let dia = 1; dia < items.length; dia++) {
+          for (let moeda = 0; moeda < items[dia].length; moeda++) {
+            ano = items[dia][0].substr(6, 4);
+            mes = items[dia][0].substr(3, 2);
+            dias = items[dia][0].substr(0, 2);
+            if (moeda == 0) {
+
+            } else {
+              fetch("https://www.mercadobitcoin.net/api/" + items[dia][moeda] + "/day-summary/" + ano + "/" + mes + "/" + dias + "/", {
+                method: 'GET',
+                headers: {
+                  'Accept': 'application/json'
+                }
+              })
+                .then(function (response) {
+                  response.json().then(function (dataJson) {
+                    items[dia][moeda] = parseFloat(dataJson.avg_price);
+                    console.log(items)
+                    var table = google.visualization.arrayToDataTable(items);
+                    var options = {
+                      chart: {
+                        title: 'Currency',
+                        subtitle: '7 days of AVG values ​​of 5 currency types',
+                      },
+                      bars: 'horizontal' // Required for Material Bar Charts.
+                    };
+                    var chart = new google.charts.Bar(document.getElementById('barchart_material'));
+                    chart.draw(table, google.charts.Bar.convertOptions(options));
+                  });
+                }).catch(function (err) {
+                })
+            }
+          }
+        }
+
+      }
+      google.charts.load('current', { 'packages': ['corechart'] });
+      google.charts.setOnLoadCallback(drawChart);
+      google.charts.load('current', { 'packages': ['bar'] });
+      google.charts.setOnLoadCallback(buscaPrecoMedioDoDia);
+    </script>
+  </head>
+
+  <body>
+    <div id="barchart_material" style="width: 900px; height: 600px;"></div>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+  </body>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="script.js" charset="utf-8"></script>
+<script src="script2.js" charset="utf-8"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+</html>
